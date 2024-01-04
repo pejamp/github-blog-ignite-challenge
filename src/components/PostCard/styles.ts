@@ -33,6 +33,10 @@ export const PostCardHeader = styled.div`
   align-items: baseline;
   gap: 16px;
 
+  a {
+    text-decoration: none;
+  }
+
   h3 {
     flex: 1;
     font-size: 1.25rem;

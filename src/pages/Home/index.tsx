@@ -13,7 +13,7 @@ import { apiGithubSearch } from '../../lib/axios'
 import { Controller, useForm } from 'react-hook-form'
 
 interface IPost {
-  id: number
+  number: number
   title: string
   body: string
   created_at: string
@@ -39,7 +39,7 @@ export function Home() {
       },
     })
     setPosts(response.data.items)
-    console.log(response)
+    console.log(response.data.items)
   }
 
   useEffect(() => {
@@ -71,8 +71,9 @@ export function Home() {
         </form>
         <PostsList>
           {posts.map((post) => (
-            <li key={post.id}>
+            <li key={post.number}>
               <PostCard
+                postNumber={post.number}
                 title={post.title}
                 createdAt={post.created_at}
                 content={post.body}

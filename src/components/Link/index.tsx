@@ -8,11 +8,18 @@ interface LinkProps {
   icon: IconProp
   iconSide?: 'left' | 'right'
   url: string
+  openInNewTab?: boolean
 }
 
-export function Link({ children, icon, url, iconSide = 'right' }: LinkProps) {
+export function Link({
+  children,
+  icon,
+  url,
+  iconSide = 'right',
+  openInNewTab = true,
+}: LinkProps) {
   return (
-    <LinkWrapper to={url} target="_blank">
+    <LinkWrapper to={url} target={openInNewTab ? '_blank' : '_self'}>
       {iconSide === 'left' && <FontAwesomeIcon icon={icon} />}
       {children}
       {iconSide === 'right' && <FontAwesomeIcon icon={icon} />}

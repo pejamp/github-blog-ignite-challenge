@@ -15,48 +15,80 @@ import {
   PostContent,
   PostInfo,
 } from './styles'
+import { useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { apiGithubIssues } from '../../lib/axios'
+import {
+  createdDateFormatted,
+  createdDateRelativeToNow,
+} from '../../utils/formatter'
+import Markdown from 'react-markdown'
+
+interface IPost {
+  html_url: string
+  title: string
+  created_at: Date
+  comments: number
+  user: { login: string }
+  body: string
+}
 
 export function Post() {
+  const params = useParams()
+  const [post, setPost] = useState<IPost>({} as IPost)
+
+  async function fetchPost() {
+    const response = await apiGithubIssues.get(
+      `pejamp/github-blog-ignite-challenge/issues/${params.postNumber}`,
+    )
+    setPost(response.data)
+    console.log(response.data)
+  }
+
+  useEffect(() => {
+    fetchPost()
+  }, [params])
+
   return (
     <PostContainer>
       <PostInfo>
         <Navigation>
-          <Link icon={faChevronLeft} iconSide="left">
+          <Link
+            url="/"
+            openInNewTab={false}
+            icon={faChevronLeft}
+            iconSide="left"
+          >
             voltar
           </Link>
-          <Link icon={faArrowUpRightFromSquare}>ver no github</Link>
+          <Link url={post.html_url} icon={faArrowUpRightFromSquare}>
+            ver no github
+          </Link>
         </Navigation>
-        <h1>JavaScript data types and data structures</h1>
+        <h1>{post.title}</h1>
         <Info>
           <BioInfo>
             <FontAwesomeIcon icon={faGithub} />
-            cameronwll
+            {post.user?.login}
           </BioInfo>
           <BioInfo>
             <FontAwesomeIcon icon={faCalendarDay} />
-            Há 1 dia
+            {/* <time
+              title={createdDateFormatted(post.created_at)}
+              dateTime={post.created_at}
+            >
+              {createdDateRelativeToNow(post.created_at)}
+            </time> */}
+            {post.created_at}
           </BioInfo>
           <BioInfo>
-            <FontAwesomeIcon icon={faComment} />5 comentários
+            <FontAwesomeIcon icon={faComment} />
+            {post.comments} comentários
           </BioInfo>
         </Info>
       </PostInfo>
       <PostContent>
-        <p>
-          Programming languages all have built-in data structures, but these
-          often differ from one language to another. This article attempts to
-          list the built-in data structures available in JavaScript and what
-          properties they have. These can be used to build other data
-          structures. Wherever possible, comparisons with other languages are
-          drawn. Dynamic typing JavaScript is a loosely typed and dynamic
-          language. Variables in JavaScript are not directly associated with any
-          particular value type, and any variable can be assigned (and
-          re-assigned) values of all types:
-        </p>
-        <code>
-          let foo = 42; // foo is now a number foo = ‘bar’; // foo is now a
-          string foo = true; // foo is now a boolean
-        </code>
+        <Markdown>{post.body}</Markdown>
       </PostContent>
     </PostContainer>
   )

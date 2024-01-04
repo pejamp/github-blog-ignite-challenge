@@ -54,4 +54,16 @@ export const PostContent = styled.article`
   display: flex;
   flex-direction: column;
   gap: 24px;
+
+  li {
+    margin-left: 2em;
+    display: list-item;
+    text-align: -webkit-match-parent;
+    list-style: disc;
+  }
+
+  code {
+    display: block;
+    white-space: pre-wrap;
+  }
 `
