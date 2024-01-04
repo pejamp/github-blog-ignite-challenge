@@ -30,6 +30,7 @@ export const PostCardContainer = styled.div`
 export const PostCardHeader = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
   gap: 16px;
 
   h3 {
@@ -39,7 +40,7 @@ export const PostCardHeader = styled.div`
     color: ${(props) => props.theme['base-title']};
   }
 
-  span {
+  time {
     color: ${(props) => props.theme['base-span']};
     font-size: 0.875rem;
   }

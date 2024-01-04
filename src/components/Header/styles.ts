@@ -9,5 +9,6 @@ export const HeaderContainer = styled.header`
 
   display: flex;
   justify-content: center;
+  align-items: flex-start;
   padding-top: 4rem;
 `

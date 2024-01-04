@@ -5,7 +5,6 @@ export const ProfileContainer = styled.div`
   min-height: 13.25rem;
 
   display: flex;
-  align-items: flex-end;
   gap: 32px;
 
   background-color: ${(props) => props.theme['base-profile']};
@@ -27,6 +26,7 @@ export const ProfileImage = styled.span`
 export const ProfileInfo = styled.div`
   flex: 1;
   width: 100%;
+  padding-top: 0.5rem;
 
   p {
     color: ${(props) => props.theme['base-text']};

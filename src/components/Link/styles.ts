@@ -1,6 +1,7 @@
 import styled from 'styled-components'
+import { Link } from 'react-router-dom'
 
-export const LinkWrapper = styled.a`
+export const LinkWrapper = styled(Link)`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -9,6 +10,7 @@ export const LinkWrapper = styled.a`
   font-weight: 700;
   text-transform: uppercase;
   border-bottom: 1px solid transparent;
+  text-decoration: none;
   cursor: pointer;
 
   &:hover {

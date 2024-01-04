@@ -14,36 +14,59 @@ import {
   ProfileImage,
   ProfileInfo,
 } from './styles'
+import { apiGithubUser } from '../../lib/axios'
+import { useEffect, useState } from 'react'
+
+interface IUser {
+  avatar_url: string
+  name: string
+  bio: string
+  login: string
+  company: string
+  followers: number
+  html_url: string
+}
 
 export function Profile() {
+  const [user, setUser] = useState({} as IUser)
+
+  async function fetchUserData() {
+    const response = await apiGithubUser.get('pejamp')
+    setUser(response.data)
+  }
+
+  useEffect(() => {
+    fetchUserData()
+  }, [])
+
   return (
     <ProfileContainer>
       <ProfileImage>
-        <img src="/avatar.png" alt="" />
+        <img src={user.avatar_url} alt={user.name} />
       </ProfileImage>
 
       <ProfileInfo>
         <HeaderInfo>
-          <h1>Name</h1>
-          <Link icon={faArrowUpRightFromSquare}>github</Link>
+          <h1>{user.name}</h1>
+          <Link icon={faArrowUpRightFromSquare} url={user.html_url}>
+            github
+          </Link>
         </HeaderInfo>
-        <p>
-          Tristique volutpat pulvinar vel massa, pellentesque egestas. Eu
-          viverra massa quam dignissim aenean malesuada suscipit. Nunc, volutpat
-          pulvinar vel mass.
-        </p>
+        <p>{user.bio}</p>
         <FooterInfo>
           <BioInfo>
             <FontAwesomeIcon icon={faGithub} />
-            name
+            {user.login}
           </BioInfo>
           <BioInfo>
             <FontAwesomeIcon icon={faBuilding} />
-            name
+            {user.company || 'não mencionado'}
           </BioInfo>
           <BioInfo>
             <FontAwesomeIcon icon={faUserGroup} />
-            name
+            {user.followers > 1
+              ? `${user.followers} seguidores`
+              : `${user.followers} seguidor`}
           </BioInfo>
         </FooterInfo>
       </ProfileInfo>

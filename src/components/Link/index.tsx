@@ -7,11 +7,12 @@ interface LinkProps {
   children: ReactNode
   icon: IconProp
   iconSide?: 'left' | 'right'
+  url: string
 }
 
-export function Link({ children, icon, iconSide = 'right' }: LinkProps) {
+export function Link({ children, icon, url, iconSide = 'right' }: LinkProps) {
   return (
-    <LinkWrapper>
+    <LinkWrapper to={url} target="_blank">
       {iconSide === 'left' && <FontAwesomeIcon icon={icon} />}
       {children}
       {iconSide === 'right' && <FontAwesomeIcon icon={icon} />}
