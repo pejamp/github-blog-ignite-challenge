@@ -5,7 +5,7 @@ import {
   ProfileSection,
   SectionHeader,
 } from './styles'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Input } from '../../components/Input'
 import { PostCard } from '../../components/PostCard'
 import { Profile } from '../../components/Profile'
@@ -31,7 +31,7 @@ export function Home() {
     await fetchPosts(data.search)
   }
 
-  async function fetchPosts(postQuery: string = '') {
+  const fetchPosts = useCallback(async (postQuery: string = '') => {
     const query = `${postQuery} repo:pejamp/github-blog-ignite-challenge`
     const response = await apiGithubSearch.get('', {
       params: {
@@ -40,11 +40,11 @@ export function Home() {
     })
     setPosts(response.data.items)
     console.log(response.data.items)
-  }
+  }, [])
 
   useEffect(() => {
     fetchPosts()
-  }, [])
+  }, [fetchPosts])
 
   return (
     <HomeContainer>

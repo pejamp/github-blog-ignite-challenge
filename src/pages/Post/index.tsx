@@ -1,3 +1,12 @@
+/* eslint-disable react/no-children-prop */
+import Markdown from 'react-markdown'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import rangeParser from 'parse-numeric-range'
+import { useTheme } from 'styled-components'
+import { useParams } from 'react-router-dom'
+import { useCallback, useEffect, useState } from 'react'
+import { apiGithubIssues } from '../../lib/axios'
 import { Link } from '../../components/Link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
@@ -8,50 +17,47 @@ import {
   faComment,
 } from '@fortawesome/free-solid-svg-icons'
 import {
+  createdDateFormatted,
+  createdDateRelativeToNow,
+} from '../../utils/formatter'
+import {
   BioInfo,
   Info,
   Navigation,
   PostContainer,
   PostContent,
-  PostInfo,
+  PostHeader,
 } from './styles'
-import { useParams } from 'react-router-dom'
-import { useEffect, useState } from 'react'
-import { apiGithubIssues } from '../../lib/axios'
-import {
-  createdDateFormatted,
-  createdDateRelativeToNow,
-} from '../../utils/formatter'
-import Markdown from 'react-markdown'
 
 interface IPost {
   html_url: string
   title: string
-  created_at: Date
+  created_at: string
   comments: number
   user: { login: string }
   body: string
 }
 
 export function Post() {
-  const params = useParams()
+  const { postNumber } = useParams()
   const [post, setPost] = useState<IPost>({} as IPost)
+  const colors = useTheme()
 
-  async function fetchPost() {
+  const fetchPost = useCallback(async () => {
     const response = await apiGithubIssues.get(
-      `pejamp/github-blog-ignite-challenge/issues/${params.postNumber}`,
+      `pejamp/github-blog-ignite-challenge/issues/${postNumber}`,
     )
     setPost(response.data)
     console.log(response.data)
-  }
+  }, [postNumber])
 
   useEffect(() => {
     fetchPost()
-  }, [params])
+  }, [fetchPost])
 
   return (
     <PostContainer>
-      <PostInfo>
+      <PostHeader>
         <Navigation>
           <Link
             url="/"
@@ -73,22 +79,80 @@ export function Post() {
           </BioInfo>
           <BioInfo>
             <FontAwesomeIcon icon={faCalendarDay} />
-            {/* <time
+            <time
               title={createdDateFormatted(post.created_at)}
               dateTime={post.created_at}
             >
               {createdDateRelativeToNow(post.created_at)}
-            </time> */}
-            {post.created_at}
+            </time>
           </BioInfo>
           <BioInfo>
             <FontAwesomeIcon icon={faComment} />
             {post.comments} comentários
           </BioInfo>
         </Info>
-      </PostInfo>
+      </PostHeader>
       <PostContent>
-        <Markdown>{post.body}</Markdown>
+        <Markdown
+          children={post.body}
+          className={'line-break'}
+          components={{
+            code({ node, className, children, ...props }) {
+              const match = /language-(\w+)/.exec(className || '')
+
+              if (!match) {
+                return <code className={className} {...props} />
+              }
+
+              const meta = node?.data as string | undefined
+
+              const applyHighlights: lineTagPropsFunction = (highlights) => {
+                if (!meta) {
+                  return {}
+                }
+
+                const regex = /{([\d,-]+)}/
+                const metadata = meta.replace(/\s/g, '')
+                const strlineNumbers = regex.test(metadata)
+                  ? regex.exec(metadata)![1]
+                  : '0'
+
+                const highlightLines = rangeParser(strlineNumbers)
+                const data = highlightLines.includes(highlights)
+                  ? 'highlight'
+                  : undefined
+
+                return { data }
+              }
+
+              return (
+                <SyntaxHighlighter
+                  useInlineStyles
+                  children={String(children).replace(/\s$/g, '')}
+                  language={match[1]}
+                  wrapLines={!!meta}
+                  lineProps={applyHighlights}
+                  style={
+                    {
+                      ...vscDarkPlus,
+                      'code[class*="language-"]': {
+                        ...vscDarkPlus['code[class*="language-"]'],
+                        backgroundColor: colors['base-post'],
+                        color: colors['base-markdown'],
+                        fontSize: '1rem',
+                      },
+                      'pre[class*="language-"]': {
+                        ...vscDarkPlus['pre[class*="language-"]'],
+                        backgroundColor: colors['base-post'],
+                        color: colors['base-markdown'],
+                      },
+                    } as never
+                  }
+                />
+              )
+            },
+          }}
+        />
       </PostContent>
     </PostContainer>
   )

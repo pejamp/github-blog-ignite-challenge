@@ -15,7 +15,7 @@ import {
   ProfileInfo,
 } from './styles'
 import { apiGithubUser } from '../../lib/axios'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 interface IUser {
   avatar_url: string
@@ -30,14 +30,15 @@ interface IUser {
 export function Profile() {
   const [user, setUser] = useState({} as IUser)
 
-  async function fetchUserData() {
+  const fetchUserData = useCallback(async () => {
     const response = await apiGithubUser.get('pejamp')
     setUser(response.data)
-  }
+    console.log(response.data)
+  }, [])
 
   useEffect(() => {
     fetchUserData()
-  }, [])
+  }, [fetchUserData])
 
   return (
     <ProfileContainer>

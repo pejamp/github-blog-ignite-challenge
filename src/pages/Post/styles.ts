@@ -6,7 +6,7 @@ export const PostContainer = styled.main`
   padding-bottom: 4rem;
 `
 
-export const PostInfo = styled.div`
+export const PostHeader = styled.div`
   min-height: 10.5rem;
   padding: 2rem;
   background-color: ${(props) => props.theme['base-profile']};
@@ -51,9 +51,11 @@ export const BioInfo = styled.span`
 
 export const PostContent = styled.article`
   padding: 2.5rem 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  overflow: hidden;
+
+  .line-break {
+    white-space: pre-wrap;
+  }
 
   li {
     margin-left: 2em;
@@ -62,8 +64,12 @@ export const PostContent = styled.article`
     list-style: disc;
   }
 
-  code {
-    display: block;
-    white-space: pre-wrap;
+  a {
+    color: ${(props) => props.theme.blue};
+    text-decoration: underline;
+  }
+
+  img {
+    object-fit: cover;
   }
 `
