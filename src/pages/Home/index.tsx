@@ -1,50 +1,30 @@
+import { Input } from '../../components/Input'
+import { PostCard } from '../../components/PostCard'
+import { Profile } from '../../components/Profile'
+import { Controller, useForm } from 'react-hook-form'
+import { usePosts } from '../../contexts/PostsContext'
 import {
   HomeContainer,
+  NotFound,
   PostsList,
   PostsSection,
   ProfileSection,
   SectionHeader,
 } from './styles'
-import { useCallback, useEffect, useState } from 'react'
-import { Input } from '../../components/Input'
-import { PostCard } from '../../components/PostCard'
-import { Profile } from '../../components/Profile'
-import { apiGithubSearch } from '../../lib/axios'
-import { Controller, useForm } from 'react-hook-form'
-
-interface IPost {
-  number: number
-  title: string
-  body: string
-  created_at: string
-}
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircleXmark } from '@fortawesome/free-solid-svg-icons'
 
 interface IFormSearchInput {
   search: string
 }
 
 export function Home() {
-  const [posts, setPosts] = useState<IPost[]>([])
+  const { posts, fetchPosts, postsError } = usePosts()
   const { handleSubmit, control } = useForm<IFormSearchInput>()
 
   async function handleSearchPosts(data: IFormSearchInput) {
     await fetchPosts(data.search)
   }
-
-  const fetchPosts = useCallback(async (postQuery: string = '') => {
-    const query = `${postQuery} repo:pejamp/github-blog-ignite-challenge`
-    const response = await apiGithubSearch.get('', {
-      params: {
-        q: query,
-      },
-    })
-    setPosts(response.data.items)
-    console.log(response.data.items)
-  }, [])
-
-  useEffect(() => {
-    fetchPosts()
-  }, [fetchPosts])
 
   return (
     <HomeContainer>
@@ -69,18 +49,25 @@ export function Home() {
             render={({ field: { onChange } }) => <Input onChange={onChange} />}
           />
         </form>
-        <PostsList>
-          {posts.map((post) => (
-            <li key={post.number}>
-              <PostCard
-                postNumber={post.number}
-                title={post.title}
-                createdAt={post.created_at}
-                content={post.body}
-              />
-            </li>
-          ))}
-        </PostsList>
+        {!postsError && posts.length > 0 ? (
+          <PostsList>
+            {posts.map((post) => (
+              <li key={post.number}>
+                <PostCard
+                  postNumber={post.number}
+                  title={post.title}
+                  createdAt={post.created_at}
+                  content={post.body}
+                />
+              </li>
+            ))}
+          </PostsList>
+        ) : (
+          <NotFound>
+            <FontAwesomeIcon icon={faCircleXmark} />
+            <h2>Nenhuma publicação foi encontrada</h2>
+          </NotFound>
+        )}
       </PostsSection>
     </HomeContainer>
   )

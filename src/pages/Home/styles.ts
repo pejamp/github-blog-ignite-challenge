@@ -40,3 +40,22 @@ export const PostsList = styled.ul`
   grid-template-columns: repeat(2, 1fr);
   gap: 32px;
 `
+
+export const NotFound = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: ${(props) => props.theme['base-label']};
+  padding: 1rem;
+
+  svg {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+`

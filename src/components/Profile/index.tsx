@@ -14,31 +14,10 @@ import {
   ProfileImage,
   ProfileInfo,
 } from './styles'
-import { apiGithubUser } from '../../lib/axios'
-import { useCallback, useEffect, useState } from 'react'
-
-interface IUser {
-  avatar_url: string
-  name: string
-  bio: string
-  login: string
-  company: string
-  followers: number
-  html_url: string
-}
+import { useProfile } from '../../contexts/ProfileContext'
 
 export function Profile() {
-  const [user, setUser] = useState({} as IUser)
-
-  const fetchUserData = useCallback(async () => {
-    const response = await apiGithubUser.get('pejamp')
-    setUser(response.data)
-    console.log(response.data)
-  }, [])
-
-  useEffect(() => {
-    fetchUserData()
-  }, [fetchUserData])
+  const { user } = useProfile()
 
   return (
     <ProfileContainer>

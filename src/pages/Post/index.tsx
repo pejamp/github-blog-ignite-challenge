@@ -4,8 +4,8 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import rangeParser from 'parse-numeric-range'
 import { useTheme } from 'styled-components'
-import { useParams } from 'react-router-dom'
-import { useCallback, useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { apiGithubIssues } from '../../lib/axios'
 import { Link } from '../../components/Link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -28,6 +28,7 @@ import {
   PostContent,
   PostHeader,
 } from './styles'
+import { AxiosError } from 'axios'
 
 interface IPost {
   html_url: string
@@ -40,20 +41,27 @@ interface IPost {
 
 export function Post() {
   const { postNumber } = useParams()
+  const navigate = useNavigate()
   const [post, setPost] = useState<IPost>({} as IPost)
   const colors = useTheme()
 
-  const fetchPost = useCallback(async () => {
-    const response = await apiGithubIssues.get(
-      `pejamp/github-blog-ignite-challenge/issues/${postNumber}`,
-    )
-    setPost(response.data)
-    console.log(response.data)
-  }, [postNumber])
-
   useEffect(() => {
+    async function fetchPost() {
+      try {
+        const response = await apiGithubIssues.get(
+          `pejamp/github-blog-ignite-challenge/issues/${postNumber}`,
+        )
+        setPost(response.data)
+        console.log(response)
+      } catch (error: unknown) {
+        const newError = error as AxiosError
+        if (newError.response?.status === 404) {
+          navigate('/404-NotFound')
+        }
+      }
+    }
     fetchPost()
-  }, [fetchPost])
+  }, [postNumber, navigate])
 
   return (
     <PostContainer>
@@ -145,6 +153,8 @@ export function Post() {
                         ...vscDarkPlus['pre[class*="language-"]'],
                         backgroundColor: colors['base-post'],
                         color: colors['base-markdown'],
+                        padding: '16px',
+                        borderRadius: '2px',
                       },
                     } as never
                   }
