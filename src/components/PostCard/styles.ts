@@ -49,3 +49,15 @@ export const PostCardHeader = styled.div`
     font-size: 0.875rem;
   }
 `
+
+export const SkeletonContainer = styled.div`
+  max-width: 26rem;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 2rem;
+  height: 16.25rem;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-color: ${(props) => props.theme['base-post']};
+`

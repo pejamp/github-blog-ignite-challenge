@@ -19,6 +19,7 @@ interface IPost {
 interface PostsContextType {
   posts: IPost[]
   postsError: boolean
+  isLoading: boolean
   fetchPosts: (query: string) => Promise<void>
 }
 
@@ -31,23 +32,32 @@ export const PostsContext = createContext({} as PostsContextType)
 export function PostsProvider({ children }: PostsProviderProps) {
   const [posts, setPosts] = useState<IPost[]>([])
   const [postsError, setPostsError] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   const fetchPosts = useCallback(async (postQuery: string = '') => {
     const query = `${postQuery} repo:pejamp/github-blog-ignite-challenge`
+
     try {
       const response = await apiGithubSearch.get('', {
         params: {
           q: query,
         },
       })
-      setPosts(response.data.items)
-      console.log(response)
+      const { items } = response.data
+
+      if (items.length === 0) {
+        setPostsError(true)
+      } else {
+        setPostsError(false)
+      }
+      setPosts(items)
     } catch (error: unknown) {
       const newError = error as AxiosError
       if (newError.response?.status === 404) {
         setPostsError(true)
       }
     }
+    setIsLoading(false)
   }, [])
 
   useEffect(() => {
@@ -55,7 +65,7 @@ export function PostsProvider({ children }: PostsProviderProps) {
   }, [fetchPosts])
 
   return (
-    <PostsContext.Provider value={{ posts, fetchPosts, postsError }}>
+    <PostsContext.Provider value={{ posts, fetchPosts, postsError, isLoading }}>
       {children}
     </PostsContext.Provider>
   )

@@ -23,12 +23,15 @@ import {
 import {
   BioInfo,
   Info,
+  MarkdownSkeleton,
   Navigation,
   PostContainer,
   PostContent,
   PostHeader,
+  PostHeaderSkeleton,
 } from './styles'
 import { AxiosError } from 'axios'
+import Skeleton from 'react-loading-skeleton'
 
 interface IPost {
   html_url: string
@@ -42,8 +45,9 @@ interface IPost {
 export function Post() {
   const { postNumber } = useParams()
   const navigate = useNavigate()
-  const [post, setPost] = useState<IPost>({} as IPost)
   const colors = useTheme()
+  const [post, setPost] = useState<IPost>({} as IPost)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     async function fetchPost() {
@@ -52,55 +56,71 @@ export function Post() {
           `pejamp/github-blog-ignite-challenge/issues/${postNumber}`,
         )
         setPost(response.data)
-        console.log(response)
       } catch (error: unknown) {
         const newError = error as AxiosError
         if (newError.response?.status === 404) {
           navigate('/404-NotFound')
         }
       }
+      setIsLoading(false)
     }
     fetchPost()
   }, [postNumber, navigate])
 
   return (
     <PostContainer>
-      <PostHeader>
-        <Navigation>
-          <Link
-            url="/"
-            openInNewTab={false}
-            icon={faChevronLeft}
-            iconSide="left"
-          >
-            voltar
-          </Link>
-          <Link url={post.html_url} icon={faArrowUpRightFromSquare}>
-            ver no github
-          </Link>
-        </Navigation>
-        <h1>{post.title}</h1>
-        <Info>
-          <BioInfo>
-            <FontAwesomeIcon icon={faGithub} />
-            {post.user?.login}
-          </BioInfo>
-          <BioInfo>
-            <FontAwesomeIcon icon={faCalendarDay} />
-            <time
-              title={createdDateFormatted(post.created_at)}
-              dateTime={post.created_at}
+      {isLoading ? (
+        <PostHeaderSkeleton>
+          <div>
+            <Skeleton width="70%" style={{ marginBottom: '1rem' }} />
+          </div>
+          <div>
+            <Skeleton count={2} />
+          </div>
+        </PostHeaderSkeleton>
+      ) : (
+        <PostHeader>
+          <Navigation>
+            <Link
+              url="/"
+              openInNewTab={false}
+              icon={faChevronLeft}
+              iconSide="left"
             >
-              {createdDateRelativeToNow(post.created_at)}
-            </time>
-          </BioInfo>
-          <BioInfo>
-            <FontAwesomeIcon icon={faComment} />
-            {post.comments} comentários
-          </BioInfo>
-        </Info>
-      </PostHeader>
+              voltar
+            </Link>
+            <Link url={post.html_url} icon={faArrowUpRightFromSquare}>
+              ver no github
+            </Link>
+          </Navigation>
+          <h1>{post.title}</h1>
+          <Info>
+            <BioInfo>
+              <FontAwesomeIcon icon={faGithub} />
+              {post.user?.login}
+            </BioInfo>
+            <BioInfo>
+              <FontAwesomeIcon icon={faCalendarDay} />
+              <time
+                title={createdDateFormatted(post.created_at)}
+                dateTime={post.created_at}
+              >
+                {createdDateRelativeToNow(post.created_at)}
+              </time>
+            </BioInfo>
+            <BioInfo>
+              <FontAwesomeIcon icon={faComment} />
+              {post.comments} comentários
+            </BioInfo>
+          </Info>
+        </PostHeader>
+      )}
       <PostContent>
+        {isLoading && (
+          <MarkdownSkeleton>
+            <Skeleton count={4} style={{ marginBottom: '0.5rem' }} />
+          </MarkdownSkeleton>
+        )}
         <Markdown
           children={post.body}
           className={'line-break'}

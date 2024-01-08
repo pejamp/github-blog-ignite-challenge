@@ -5,6 +5,7 @@ import {
 import removeMarkdown from 'markdown-to-text'
 import { PostCardContainer, PostCardHeader } from './styles'
 import { NavLink } from 'react-router-dom'
+import Skeleton from 'react-loading-skeleton'
 
 interface PostCardProps {
   postNumber: number
@@ -23,7 +24,7 @@ export function PostCard({
     <PostCardContainer>
       <PostCardHeader>
         <NavLink to={`post/${postNumber}/${title}`}>
-          <h3>{title}</h3>
+          <h3>{title || <Skeleton />}</h3>
         </NavLink>
         <time title={createdDateFormatted(createdAt)} dateTime={createdAt}>
           {createdDateRelativeToNow(createdAt)}

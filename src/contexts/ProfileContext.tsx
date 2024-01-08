@@ -20,6 +20,7 @@ interface IUser {
 
 interface ProfileContextType {
   user: IUser
+  isLoading: boolean
 }
 
 interface ProfileProviderProps {
@@ -30,11 +31,12 @@ export const ProfileContext = createContext({} as ProfileContextType)
 
 export function ProfileProvider({ children }: ProfileProviderProps) {
   const [user, setUser] = useState({} as IUser)
+  const [isLoading, setIsLoading] = useState(true)
 
   const fetchUserData = useCallback(async () => {
     const response = await apiGithubUser.get('pejamp')
     setUser(response.data)
-    console.log(response.data)
+    setIsLoading(false)
   }, [])
 
   useEffect(() => {
@@ -42,7 +44,7 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
   }, [fetchUserData])
 
   return (
-    <ProfileContext.Provider value={{ user }}>
+    <ProfileContext.Provider value={{ user, isLoading }}>
       {children}
     </ProfileContext.Provider>
   )

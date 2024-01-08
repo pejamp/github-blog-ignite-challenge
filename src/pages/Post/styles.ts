@@ -73,3 +73,14 @@ export const PostContent = styled.article`
     object-fit: cover;
   }
 `
+
+export const PostHeaderSkeleton = styled.div`
+  min-height: 10.5rem;
+  padding: 2rem;
+  background-color: ${(props) => props.theme['base-profile']};
+  border-radius: 10px;
+  box-shadow: 0px 2px 28px 0px rgba(0, 0, 0, 0.2);
+  margin-top: -5.5rem;
+`
+
+export const MarkdownSkeleton = styled.div``

@@ -13,13 +13,14 @@ import {
 } from './styles'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleXmark } from '@fortawesome/free-solid-svg-icons'
+import { PostCardSkeleton } from '../../components/PostCard/PostCardSkeleton'
 
 interface IFormSearchInput {
   search: string
 }
 
 export function Home() {
-  const { posts, fetchPosts, postsError } = usePosts()
+  const { posts, fetchPosts, postsError, isLoading } = usePosts()
   const { handleSubmit, control } = useForm<IFormSearchInput>()
 
   async function handleSearchPosts(data: IFormSearchInput) {
@@ -49,8 +50,14 @@ export function Home() {
             render={({ field: { onChange } }) => <Input onChange={onChange} />}
           />
         </form>
-        {!postsError && posts.length > 0 ? (
+        {postsError ? (
+          <NotFound>
+            <FontAwesomeIcon icon={faCircleXmark} />
+            <h2>Nenhuma publicação foi encontrada</h2>
+          </NotFound>
+        ) : (
           <PostsList>
+            {isLoading && <PostCardSkeleton cards={4} />}
             {posts.map((post) => (
               <li key={post.number}>
                 <PostCard
@@ -62,11 +69,6 @@ export function Home() {
               </li>
             ))}
           </PostsList>
-        ) : (
-          <NotFound>
-            <FontAwesomeIcon icon={faCircleXmark} />
-            <h2>Nenhuma publicação foi encontrada</h2>
-          </NotFound>
         )}
       </PostsSection>
     </HomeContainer>

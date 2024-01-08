@@ -67,3 +67,25 @@ export const BioInfo = styled.span`
     color: ${(props) => props.theme['base-label']};
   }
 `
+
+export const SkeletonContainer = styled.div`
+  padding: 2rem 2.5rem;
+  min-height: 13.25rem;
+
+  display: flex;
+  gap: 32px;
+
+  background-color: ${(props) => props.theme['base-profile']};
+  box-shadow: 0px 2px 28px 0px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+
+  .skeleton__info {
+    flex: 1;
+  }
+`
+
+export const SkeletonImage = styled.span`
+  width: 9.25rem;
+  height: 9.25rem;
+  border-radius: 8px;
+`
